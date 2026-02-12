@@ -1,9 +1,1 @@
-{
-  "messages": ["hey", "hir "],
-  "alarms": [
-    { "time": "2026-02-14T07:30:00", "label": "wake up" },
-    { "time": "2026-02-14T07:30:00", "label": "wake up" },
-    { "time": "were", "label": "thing2" },
-    { "time": "were", "label": "thing2" }
-  ]
-}
+{"messages":["hey","hir "],"alarms":[{"time":"2026-02-14T07:30:00","label":"wake up"},{"time":"2026-02-14T07:30:00","label":"wake up"},{"time":1770904800000}]}

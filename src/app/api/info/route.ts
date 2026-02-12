@@ -18,13 +18,16 @@ export async function POST(req: NextRequest) {
  messages = []
  }
  */
+
   const filePath = join(process.cwd(), "src/app/api/info/info.json")
   const fileContent = await readFile(filePath, "utf-8")
   const data = JSON.parse(fileContent)
 
   const reqData = await req.json()
+  console.log(reqData)
   if (reqData.alarms != undefined) {
     data.alarms.push(...reqData.alarms)
+    console.log()
   }
   if (reqData.messages != undefined) {
     data.messages.push(...reqData.messages)
