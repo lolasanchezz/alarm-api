@@ -1,13 +1,41 @@
-import { NextResponse } from "next/server"
+import { NextResponse, NextRequest } from "next/server"
+import { readFile, writeFile } from "fs/promises"
+import { join } from "path"
 
-let alarms = [
-  {
-    id: 1,
-    time: "2026-02-14T07:30:00",
-    label: "wake up"
+export async function GET(req: NextRequest) {
+  const filePath = join(process.cwd(), "src/app/api/info/info.json")
+  const fileContent = await readFile(filePath, "utf-8")
+  const data = JSON.parse(fileContent)
+  
+  return NextResponse.json(data)
+}
+
+export async function POST(req: NextRequest) {
+
+ /* 
+ structure of request: {
+ alarms = []
+ messages = []
+ }
+ */
+  const filePath = join(process.cwd(), "src/app/api/info/info.json")
+  const fileContent = await readFile(filePath, "utf-8")
+  const data = JSON.parse(fileContent)
+
+  const reqData = await req.json()
+  if (reqData.alarms != undefined) {
+    data.alarms.push(...reqData.alarms)
   }
-]
+  if (reqData.messages != undefined) {
+    data.messages.push(...reqData.messages)
+  }
 
-export async function GET() {
-  return NextResponse.json(alarms)
+  await writeFile(filePath, JSON.stringify(data))
+
+  return NextResponse.json({
+    ok: true,
+    alarmsAdded: Array.isArray(reqData.alarms) ? reqData.alarms.length : 0,
+    messagesAdded: Array.isArray(reqData.messages) ? reqData.messages.length : 0,
+  })
+
 }
