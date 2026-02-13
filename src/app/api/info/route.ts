@@ -42,3 +42,36 @@ export async function POST(req: NextRequest) {
   })
 
 }
+
+
+export async function DELETE(req: NextRequest) {
+  /*
+  alarms: 1 (delete 1)
+  */
+
+  const filePath = join(process.cwd(), "src/app/api/info/info.json")
+  const fileContent = await readFile(filePath, "utf-8")
+  const data = JSON.parse(fileContent)
+
+  const reqData = await req.json()
+  console.log(reqData)
+  if (reqData.alarms != undefined) {
+    data.alarms.pop(reqData.alarms)
+    console.log()
+  }
+  if (reqData.messages != undefined) {
+    data.alarms.pop(reqData.messages)
+    console.log()
+  }
+
+  await writeFile(filePath, JSON.stringify(data))
+  console.log(data.alarms)
+  return NextResponse.json({
+    ok: true,
+    newAlarms: data.alarms,
+    newMessages: data.messages
+  })
+
+
+
+}
