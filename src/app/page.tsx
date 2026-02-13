@@ -4,18 +4,6 @@ import styles from "./page.module.css";
 import { NextResponse, NextRequest } from "next/server";
 import Calendar from "react-calendar";
 import { useEffect, useState } from "react";
-
-function parseDateTime(dateStr: string): number {
-  // parse format: "Thu, Feb 12 9:00am"
-  const regex = /\w+,\s+(\w+)\s+(\d+)\s+(\d+):(\d+)(am|pm)/i;
-  const match = dateStr.match(regex);
-
-  if (!match) {
-    throw new Error("Invalid date format");
-  }
-
-  const [, monthName, day, hours, minutes, ampm] = match;
-
   const months: { [key: string]: number } = {
     jan: 0,
     feb: 1,
@@ -30,6 +18,18 @@ function parseDateTime(dateStr: string): number {
     nov: 10,
     dec: 11,
   };
+function parseDateTime(dateStr: string): number {
+  // parse format: "Thu, Feb 12 9:00am"
+  const regex = /\w+,\s+(\w+)\s+(\d+)\s+(\d+):(\d+)(am|pm)/i;
+  const match = dateStr.match(regex);
+
+  if (!match) {
+    throw new Error("Invalid date format");
+  }
+
+  const [, monthName, day, hours, minutes, ampm] = match;
+
+
 
   const month = months[monthName.toLowerCase().slice(0, 3)];
   let hour = parseInt(hours);
@@ -51,6 +51,27 @@ function parseDateTime(dateStr: string): number {
 
   return date.getTime();
 }
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function formatDateTime(timestamp: number): string {
+  const date = new Date(timestamp);
+  const dayName = dayNames[date.getDay()];
+  const monthName = monthNames[date.getMonth()];
+  const day = date.getDate();
+  let hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  
+  // Convert to 12-hour format
+  hours = hours % 12 || 12;
+  
+  return `${dayName}, ${monthName} ${day} ${hours}:${minutes}${ampm}`;
+}
+
+
+
+
 
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -85,7 +106,12 @@ export default function Home() {
                 {alarms: [
                   {time: parseDateTime(formProps.timeInp as string)}]
               })
-            })}}>
+            })
+setData({
+  ...data,
+  alarms: [...data.alarms, {time: parseDateTime(formProps.timeInp as string)}]
+})
+            }}>
             <input
               name="timeInp"
               type="text"
@@ -98,11 +124,13 @@ export default function Home() {
         <h1 className= {styles.header}>alarms</h1>
       <div className = {styles.scrollDiv}>
         {!data? 'loading' : data.alarms.map((row: any, i: number) => {
-          
-            <div key={i}>
-              <h3>{row}</h3>
+         console.log(data)
+          return (
+            <div className = {styles.row} key={i}>
+              <p>x</p>
+              <h3>{formatDateTime(row.time)}</h3>
             </div>
-          
+          )
         })}
       </div>
     </div>

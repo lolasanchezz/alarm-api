@@ -5,30 +5,29 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .alarmCont1 {
   display: flex;
-  
+
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
   height: 20%;
 }
 
-
-.alarmCont2{
+.alarmCont2 {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 
 .header {
   font-size: 40;
 }
-
 
 .selDatesDiv {
   font-size: 10px;
@@ -40,8 +39,7 @@
 }
 
 .selDatesDiv h1 {
-    font-size: 20px;
-
+  font-size: 20px;
 }
 
 .selDatesDiv input {
@@ -50,4 +48,21 @@
   font-size: 20px;
   text-align: center;
   width: 25vh;
+}
+.scrollDiv {
+  display: flex;
+  flex-direction: column;
+  overflow-x:scroll;
+  height: 70%;
+  width: 100%;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.row p {
+  font-size: 2vh;
+  margin-right: 2vh;
 }
