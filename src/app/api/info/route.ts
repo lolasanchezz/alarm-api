@@ -1,7 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
-import { readFile, writeFile } from "fs/promises";
-import { join } from "path";
-import { createClient } from "./utils/server";
+
+import { createClient } from "../utils/server";
 import { cookies } from "next/headers";
 
 export async function GET(req: NextRequest) {
