@@ -36,15 +36,17 @@ const monthNames = [
 const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function parseDateTime(dateStr: string): number {
-  
-const monthName = dateStr.substring(5, 8);
+  const monthName = dateStr.substring(5, 8);
   const day = dateStr.substring(9, 11).trim();
   const timeStr = dateStr.substring(12);
-  const hour = parseInt(timeStr.split(':')[0]);
-  const minutes = timeStr.substring(timeStr.indexOf(':') + 1, timeStr.indexOf(':') + 3);
-  const ampm = timeStr.slice(-2)
+  const hour = parseInt(timeStr.split(":")[0]);
+  const minutes = timeStr.substring(
+    timeStr.indexOf(":") + 1,
+    timeStr.indexOf(":") + 3,
+  );
+  const ampm = timeStr.slice(-2);
 
-    const month = months[monthName.toLowerCase()];
+  const month = months[monthName.toLowerCase()];
   let hourAdjusted = hour;
   if (ampm.toLowerCase() === "pm" && hourAdjusted !== 12) {
     hourAdjusted += 12;
@@ -63,7 +65,6 @@ const monthName = dateStr.substring(5, 8);
 
   return date.getTime();
 }
-
 
 function formatDateTime(timestamp: number): string {
   const date = new Date(timestamp);
@@ -112,9 +113,7 @@ export default function Home() {
               fetch("/api/info", {
                 method: "POST",
                 body: JSON.stringify({
-                  alarms: [
-                    { time: parseDateTime(formProps.timeInp as string) },
-                  ],
+                  alarms: { time: parseDateTime(formProps.timeInp as string) },
                 }),
               });
               setData({
@@ -145,16 +144,18 @@ export default function Home() {
                   <div className={styles.row} key={i}>
                     <p
                       onClick={async () => {
+                        console.log('deleting')
+                        console.log(row)
                         const res = await fetch("/api/info", {
                           method: "DELETE",
                           body: JSON.stringify({
-                            alarms: i,
+                            alarms: row,
                           }),
                         });
                         const resJs = await res.json();
 
                         console.log(resJs);
-                        setData({ ...data, alarms: resJs.newAlarms });
+                        setData({ ...data, alarms: resJs.res.newAlarms });
                       }}
                     >
                       x

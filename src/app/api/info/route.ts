@@ -1,77 +1,77 @@
-import { NextResponse, NextRequest } from "next/server"
-import { readFile, writeFile } from "fs/promises"
-import { join } from "path"
+import { NextResponse, NextRequest } from "next/server";
+import { readFile, writeFile } from "fs/promises";
+import { join } from "path";
+import { createClient } from "./utils/server";
+import { cookies } from "next/headers";
 
 export async function GET(req: NextRequest) {
-  const filePath = join(process.cwd(), "src/app/api/info/info.json")
-  const fileContent = await readFile(filePath, "utf-8")
-  const data = JSON.parse(fileContent)
-  
-  return NextResponse.json(data)
+  const cookieStore = cookies();
+  const supabase = await createClient(cookieStore);
+    const res: any = {};
+
+  const { data: alarms } = await supabase.from("alarms").select();
+
+  return NextResponse.json({
+    ok: true,
+    alarms:alarms
+  });
 }
 
 export async function POST(req: NextRequest) {
-
- /* 
+  /* 
  structure of request: {
  alarms = []
  messages = []
  }
  */
 
-  const filePath = join(process.cwd(), "src/app/api/info/info.json")
-  const fileContent = await readFile(filePath, "utf-8")
-  const data = JSON.parse(fileContent)
-
-  const reqData = await req.json()
-  console.log(reqData)
+  const res: any = {};
+  const reqData = await req.json();
   if (reqData.alarms != undefined) {
-    data.alarms.push(...reqData.alarms)
-    console.log()
+    const cookieStore = cookies();
+    const supabase = await createClient(cookieStore);
+    console.log(reqData.alarms)
+    const { data: alarms } = await supabase
+      .from("alarms")
+      .insert(reqData.alarms)
+      .select();
+    res.alarmsAdded = alarms;
   }
-  if (reqData.messages != undefined) {
-    data.messages.push(...reqData.messages)
-  }
-
-  await writeFile(filePath, JSON.stringify(data))
-
+  res.ok = true;
+  console.log(res)
   return NextResponse.json({
-    ok: true,
-    alarmsAdded: Array.isArray(reqData.alarms) ? reqData.alarms.length : 0,
-    messagesAdded: Array.isArray(reqData.messages) ? reqData.messages.length : 0,
-  })
-
+    res,
+  });
 }
-
 
 export async function DELETE(req: NextRequest) {
   /*
   alarms: 1 (delete 1)
   */
+  const cookieStore = cookies();
+  const supabase = await createClient(cookieStore);
+    const res: any = {};
 
-  const filePath = join(process.cwd(), "src/app/api/info/info.json")
-  const fileContent = await readFile(filePath, "utf-8")
-  const data = JSON.parse(fileContent)
-
-  const reqData = await req.json()
+  const reqData = await req.json();
   console.log(reqData)
   if (reqData.alarms != undefined) {
-    data.alarms.pop(reqData.alarms)
-    console.log()
+   const { data: alarms, error } = await supabase
+      .from("alarms")
+      .delete()
+      .eq("id", reqData.alarms.id)
+      .select();
+    res.newAlarms = alarms
+  
+  if (error) {
+    console.error(error)
+    res.statusText = error
+    return res
   }
-  if (reqData.messages != undefined) {
-    data.alarms.pop(reqData.messages)
-    console.log()
-  }
+}
+  res.ok = true
+  console.log(res)
 
-  await writeFile(filePath, JSON.stringify(data))
-  console.log(data.alarms)
   return NextResponse.json({
-    ok: true,
-    newAlarms: data.alarms,
-    newMessages: data.messages
-  })
-
-
-
+    res
+  });
 }
